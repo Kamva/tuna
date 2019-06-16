@@ -28,7 +28,7 @@ func (g *GRPC) Server() *grpc.Server {
 }
 
 // Run starts the gRPC server on given address.
-func (g *GRPC) Run(address string, ch chan byte) {
+func (g *GRPC) Run(address string) {
 	listen, err := net.Listen("tcp", address)
 	shark.PanicIfError(err)
 
@@ -48,8 +48,6 @@ func (g *GRPC) Run(address string, ch chan byte) {
 	// start gRPC server
 	golog.Infof("grpc: Server Started on %s", address)
 	shark.PanicIfError(g.server.Serve(listen))
-
-	ch <- 1
 }
 
 // New instantiate the GRPC handler.
