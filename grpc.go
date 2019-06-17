@@ -45,11 +45,11 @@ func (g *GRPC) Shutdown() {
 }
 
 // New instantiate the GRPC handler.
-func New(opt ...grpc.ServerOption) *GRPC {
+func New(ctx context.Context, opt ...grpc.ServerOption) *GRPC {
 	opt = append(opt, grpc.UnaryInterceptor(serverLogInterceptor))
 
 	return &GRPC{
 		server:  grpc.NewServer(opt...),
-		context: context.Background(),
+		context: ctx,
 	}
 }
