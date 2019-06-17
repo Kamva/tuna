@@ -3,10 +3,7 @@ package tuna
 import (
 	"context"
 	"net"
-	"os"
-	"os/signal"
 
-	"github.com/Kamva/shark"
 	"github.com/kataras/golog"
 	"google.golang.org/grpc"
 )
@@ -30,24 +27,21 @@ func (g *GRPC) Server() *grpc.Server {
 // Run starts the gRPC server on given address.
 func (g *GRPC) Run(address string) {
 	listen, err := net.Listen("tcp", address)
-	shark.PanicIfError(err)
-
-	// graceful shutdown in interrupt signal
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-	go func() {
-		for range c {
-			golog.Error("grpc: Server closed")
-
-			g.server.GracefulStop()
-
-			<-g.context.Done()
-		}
-	}()
+	if err != nil {
+		golog.Fatal(err)
+	}
 
 	// start gRPC server
 	golog.Infof("grpc: Server Started on %s", address)
-	shark.PanicIfError(g.server.Serve(listen))
+	err = g.server.Serve(listen)
+	if err != nil {
+		golog.Fatal(err)
+	}
+}
+
+// Shutdown shutting down grpc server gracefully.
+func (g *GRPC) Shutdown() {
+	g.server.GracefulStop()
 }
 
 // New instantiate the GRPC handler.
