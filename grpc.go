@@ -25,15 +25,10 @@ func (g *GRPC) Server() *grpc.Server {
 }
 
 // Run starts the gRPC server on given address.
-func (g *GRPC) Run(address string) {
-	listen, err := net.Listen("tcp", address)
-	if err != nil {
-		golog.Fatal(err)
-	}
-
+func (g *GRPC) Run(listener net.Listener) {
 	// start gRPC server
-	golog.Infof("grpc: Server Started on %s", address)
-	err = g.server.Serve(listen)
+	golog.Info("grpc: Server Started")
+	err := g.server.Serve(listener)
 	if err != nil {
 		golog.Fatal(err)
 	}
